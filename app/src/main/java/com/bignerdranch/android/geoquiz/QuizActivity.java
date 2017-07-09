@@ -1,5 +1,6 @@
 package com.bignerdranch.android.geoquiz;
 
+import android.support.v4.util.LogWriter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +17,8 @@ public class QuizActivity extends AppCompatActivity {
     private TextView mQuestionTextView;
 
     private Button mNextButton;
+
+    private Button mPrevButton;
 
 
 
@@ -44,6 +47,7 @@ public class QuizActivity extends AppCompatActivity {
         mFalseButton = (Button) findViewById(R.id.false_button);
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
         mNextButton = (Button) findViewById(R.id.next_button);
+        mPrevButton = (Button) findViewById(R.id.prev_button);
 
 
 
@@ -81,13 +85,32 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        mPrevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                prevQuestion();
+            }
+        });
+
         updateQuestion();
 
     }
 
     private void nextQuestion() {
-        mCurrentIndex = (mCurrentIndex + 1) %
-                mQuestionBank.length;
+        mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+        updateQuestion();
+    }
+
+    private void prevQuestion(){
+
+        if(mCurrentIndex == 0){
+            mCurrentIndex = mQuestionBank.length - 1;
+        }
+        else
+        {
+            mCurrentIndex = (mCurrentIndex - 1);
+        }
+
         updateQuestion();
     }
 

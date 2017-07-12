@@ -27,12 +27,11 @@ public class QuizActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
 
     private static final String KEY_INDEX = "index";
-    
+
+    private float mUserScore = 0.0f;
 
     private int mCurrentIndex = 0;
-
-
-
+    
     private Question[] mQuestionBank = new Question[]
             {
                     new Question(R.string.question_australia,
@@ -47,7 +46,7 @@ public class QuizActivity extends AppCompatActivity {
                     new Question(R.string.question_asia, true),
             };
 
-    private ArrayList<Integer> questionAnswerBank = new ArrayList<>();
+    private ArrayList<Integer> mQuestionAnswerBank = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +54,7 @@ public class QuizActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate(Bundle) called");
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
-            questionAnswerBank = savedInstanceState.getIntegerArrayList(KEY_INDEX);
+            mQuestionAnswerBank = savedInstanceState.getIntegerArrayList(KEY_INDEX);
         }
         setContentView(R.layout.activity_quiz);
 
@@ -69,8 +68,9 @@ public class QuizActivity extends AppCompatActivity {
         mTrueButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-               checkAnswer(true);
+                checkAnswer(true);
                 disableButtons();
+                userCompletedQuiz();
             }
         });
 
@@ -80,6 +80,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View view) {
                checkAnswer(false);
                 disableButtons();
+                userCompletedQuiz();
 
             }
         });
@@ -117,7 +118,7 @@ public class QuizActivity extends AppCompatActivity {
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX,
                 mCurrentIndex);
-        savedInstanceState.putIntegerArrayList(KEY_INDEX,questionAnswerBank);
+        savedInstanceState.putIntegerArrayList(KEY_INDEX, mQuestionAnswerBank);
     }
 
     @Override
@@ -174,11 +175,18 @@ public class QuizActivity extends AppCompatActivity {
 
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
 
-        questionAnswerBank.add(mCurrentIndex);
+        mQuestionAnswerBank.add(mCurrentIndex);
 
         int messageResId = 0;
 
-        messageResId = userPressedTrue == answerIsTrue ? R.string.correct_toast : R.string.incorrect_toast;
+        if (userPressedTrue == answerIsTrue) {
+            messageResId = R.string.correct_toast;
+            mUserScore++;
+
+        }
+        else{
+            messageResId = R.string.incorrect_toast;
+        }
 
         Toast.makeText(this, messageResId,Toast.LENGTH_SHORT).show();
     }
@@ -195,11 +203,19 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void checkIfAnswered(){
-        if (questionAnswerBank.contains(mCurrentIndex)) {
+        if (mQuestionAnswerBank.contains(mCurrentIndex)) {
             disableButtons();
         }
         else{
             enableButtons();
+        }
+    }
+
+    private void userCompletedQuiz(){
+        if (mQuestionAnswerBank.size() == mQuestionBank.length){
+            float userScorePercentage = (mUserScore / mQuestionBank.length) * 100;
+            CharSequence scoreText = "Your score is " + " " + userScorePercentage;
+            Toast.makeText(this, scoreText,Toast.LENGTH_LONG).show();
         }
     }
 }

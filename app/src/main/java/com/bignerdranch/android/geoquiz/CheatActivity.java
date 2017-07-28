@@ -15,6 +15,7 @@ public class CheatActivity extends AppCompatActivity
 
     private static final String EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown";
 
+    private static final String SAVED_TEXT_KEY = "SavedText";
 
     private boolean mAnswerIsTrue;
 
@@ -47,12 +48,20 @@ public class CheatActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_cheat);
 
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
 
         mShowAnswerButton = (Button) findViewById(R.id.show_button);
         mAnswerTextView = (TextView) findViewById(R.id.cheat_text_view);
+
+        if(savedInstanceState != null)
+        {
+            mAnswerTextView.setText(savedInstanceState.getString(SAVED_TEXT_KEY, ""));
+            setAnswerShownResult(true);
+        }
 
         mShowAnswerButton.setOnClickListener(new View.OnClickListener()
         {
@@ -94,4 +103,8 @@ public class CheatActivity extends AppCompatActivity
         setResult(RESULT_OK, data);
     }
 
+    public void onSaveInstanceState( Bundle savedInstanceState ) {
+        // now, save the text if something overlaps this Activity
+        savedInstanceState.putString( SAVED_TEXT_KEY, mAnswerTextView.getText().toString() );
+    }
 }

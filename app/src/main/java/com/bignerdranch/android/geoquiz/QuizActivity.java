@@ -25,6 +25,8 @@ public class QuizActivity extends AppCompatActivity
 
     private TextView mQuestionTextView;
 
+    private TextView mNumberOfCheatsTextView;
+
     private ImageButton mNextButton;
 
     private ImageButton mPrevButton;
@@ -32,6 +34,8 @@ public class QuizActivity extends AppCompatActivity
     private float mUserScore = 0.0f;
 
     private int mCurrentIndex = 0;
+
+    private int mNumberOfCheats = 3;
 
     private static final int REQUEST_CODE_CHEAT = 0;
 
@@ -79,6 +83,9 @@ public class QuizActivity extends AppCompatActivity
         mNextButton = (ImageButton) findViewById(R.id.next_button);
         mPrevButton = (ImageButton) findViewById(R.id.prev_button);
         mCheatButton = (Button) findViewById(R.id.cheat_button);
+        mNumberOfCheatsTextView = (TextView) findViewById(R.id.number_of_cheats_text_view);
+        mNumberOfCheatsTextView.setText(String.format("%d",mNumberOfCheats));
+
 
 
         mTrueButton.setOnClickListener(new View.OnClickListener()
@@ -222,6 +229,7 @@ public class QuizActivity extends AppCompatActivity
         }
 
         updateQuestion();
+
     }
 
     private void updateQuestion()
@@ -310,6 +318,30 @@ public class QuizActivity extends AppCompatActivity
                 return;
             }
             mIsCheater = CheatActivity.wasAnswerShown(data);
+            reduceNumberOfCheat(mIsCheater);
+            mNumberOfCheatsTextView.setText(String.format("%d", mNumberOfCheats));
+            disableCheatButton();
+        }
+    }
+
+    /***
+     *  Reduces the number of cheat allowed.
+     */
+    private void reduceNumberOfCheat(Boolean isCheater)
+    {
+        if (isCheater)
+        {
+            mNumberOfCheats = mNumberOfCheats - 1;
+
+
+        }
+    }
+
+    private void disableCheatButton()
+    {
+        if (mNumberOfCheats == 0)
+        {
+            mCheatButton.setEnabled(false);
         }
     }
 }
